@@ -1,4 +1,6 @@
 
+import csv
+
 def force_brute(max_value, actions, selected_actions = []):
 
     if actions:
@@ -15,54 +17,28 @@ def force_brute(max_value, actions, selected_actions = []):
 
 
 
-def optimisation(max_value, actions):
-    matrice = [[0 for x in range(max_value + 1)] for x in range(len(actions) + 1)]
+f= open (r"dataset3.csv") 
+myReader = csv.reader(f) 
+ele = []
 
-    for i in range(1, len(actions) + 1) :
-        for w in range(1, max_value + 1) :
-            if actions[i-1][1] <= w :
-                matrice[i][w] = max(actions[i-1][2] + matrice[i-1][w-int(round(actions[i-1][1]))], matrice[i-1][w])
-            else :
-                matrice[i][w] = matrice[i-1][w]
-    
+for row in myReader:
+    ele.append(row)  
 
-    w = max_value
-    n = len(actions)
-    action_selection = []
+ele = ele[1:]
+actions = []
+max_value = 500
 
-    while w >= 0 and n >= 0 :
-        e = actions[n-1]
-        if matrice[n][int(float(w))] == matrice[n-1][int(round(w-e[1]))] + e[2] :
-            action_selection.append(e)
-            w -= e[1]
+for i in range (0 , len(ele)-1):
+   action = ele[i]
+   #converting the prices and interest from str to float and int
+   action[1] = int(action[1])
+   action[2] = float(action[2])
+   actions.append(action)
 
-        n -= 1
-    
-    return matrice[-1][-1], action_selection
+value_invested, profit, selected_shares = force_brute(max_value,actions)
 
-ele = [('action_1',20.2,20*1.05),
-       ('action_2',30,30*1.1),
-       ('action_3',50,50*1.15),
-       ('action_4',70,70*1.20),
-       ('action_5',60,60*1.17),
-       ('action_6',80.1,80*1.25),
-       ('action_7',22,22*1.07),
-       ('action_8',26,26*1.11),
-       ('action_9',48,48*1.13), 
-       ('action_10',34,34*1.27),
-       ('action_11',42,42*1.17),
-       ('action_12',110,110*1.09),
-       ('action_13',38,38*1.23),
-       ('action_14',14,14*1.01), 
-       ('action_15',18,18*1.03), 
-       ('action_16',8,8*1.08),
-       ('action_17',4,4*1.12),
-       ('action_18',10,10*1.14),
-       ('action_19',24,24*1.21),
-       ('action_20',114,114*1.18)]
-
-#f = open(dataset1.csv, 'w', encoding="utf-8")
-
-#print(force_brute(500,ele))
-
-print(optimisation(500,ele))
+print("Actions bought: ")
+print(selected_shares) 
+print(" ")
+print("Total cost: " + str(value_invested))
+print("Total return: " + str(profit))
